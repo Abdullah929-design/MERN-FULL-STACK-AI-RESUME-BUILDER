@@ -1,0 +1,1031 @@
+{
+  "modern": {
+    "id": "modern",
+    "name": "Modern",
+    "description": "Clean contemporary design with sidebar layout",
+    "layout": "sidebar-left",
+    "theme": {
+      "primary": "#1e3a8a",
+      "secondary": "#3b82f6",
+      "background": "#ffffff",
+      "text": "#1f2937",
+      "accent": "#60a5fa"
+    },
+    "typography": {
+      "fontFamily": "'Inter', sans-serif",
+      "headerFont": "'Inter', sans-serif",
+      "sizes": {
+        "h1": "2rem",
+        "h2": "1.5rem",
+        "h3": "1.25rem",
+        "body": "0.875rem",
+        "small": "0.75rem"
+      }
+    },
+    "spacing": {
+      "section": "2.5rem",
+      "item": "1rem",
+      "padding": "2.5rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": true,
+          "layout": "sidebar",
+          "alignment": "center"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "background": "#1e3a8a",
+          "padding": "2.5rem"
+        }
+      },
+      {
+        "id": "personal",
+        "type": "personal",
+        "component": "PersonalSection",
+        "props": {
+          "layout": "vertical",
+          "showIcons": true
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "background": "#1e3a8a",
+          "padding": "0 2.5rem 2.5rem"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "SKILLS",
+          "layout": "cloud",
+          "showAsTags": true
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "background": "#1e3a8a",
+          "padding": "0 2.5rem 2.5rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "PROFESSIONAL SUMMARY",
+          "alignment": "left",
+          "fontStyle": "normal"
+        },
+        "order": 4,
+        "layout": {
+          "width": "full",
+          "position": "right"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "PROFESSIONAL EXPERIENCE",
+          "layout": "detailed",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "full"
+        },
+        "order": 5,
+        "layout": {
+          "width": "full",
+          "position": "right"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "EDUCATION",
+          "layout": "detailed",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 6,
+        "layout": {
+          "width": "full",
+          "position": "right"
+        }
+      }
+    ]
+  },
+  "classic": {
+    "id": "classic",
+    "name": "Classic",
+    "description": "Traditional single-column layout with serif typography",
+    "layout": "single-column",
+    "theme": {
+      "primary": "#111827",
+      "secondary": "#374151",
+      "background": "#ffffff",
+      "text": "#111827",
+      "accent": "#6b7280"
+    },
+    "typography": {
+      "fontFamily": "'Georgia', serif",
+      "headerFont": "'Georgia', serif",
+      "sizes": {
+        "h1": "2.25rem",
+        "h2": "1.25rem",
+        "h3": "1.125rem",
+        "body": "0.875rem",
+        "small": "0.75rem"
+      }
+    },
+    "spacing": {
+      "section": "2.5rem",
+      "item": "1rem",
+      "padding": "4rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": false,
+          "layout": "vertical",
+          "alignment": "center"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        },
+        "styling": {
+          "borderBottom": "2px solid #111827",
+          "paddingBottom": "2rem",
+          "marginBottom": "2.5rem"
+        }
+      },
+      {
+        "id": "personal",
+        "type": "personal",
+        "component": "PersonalSection",
+        "props": {
+          "layout": "inline",
+          "showIcons": false
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        },
+        "styling": {
+          "marginBottom": "2.5rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "PROFESSIONAL SUMMARY",
+          "alignment": "justify",
+          "fontStyle": "normal"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "PROFESSIONAL EXPERIENCE",
+          "layout": "detailed",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "full"
+        },
+        "order": 4,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "EDUCATION",
+          "layout": "detailed",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 5,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "SKILLS",
+          "layout": "list",
+          "showAsTags": false,
+          "columns": 2
+        },
+        "order": 6,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      }
+    ]
+  },
+  "creative": {
+    "id": "creative",
+    "name": "Creative",
+    "description": "Bold design with asymmetrical layout and vibrant colors",
+    "layout": "sidebar-right",
+    "theme": {
+      "primary": "#0d9488",
+      "secondary": "#14b8a6",
+      "background": "#f8fafc",
+      "text": "#1e293b",
+      "accent": "#5eead4"
+    },
+    "typography": {
+      "fontFamily": "'Inter', sans-serif",
+      "headerFont": "'Inter', sans-serif",
+      "sizes": {
+        "h1": "3.75rem",
+        "h2": "0.75rem",
+        "h3": "1.25rem",
+        "body": "0.875rem",
+        "small": "0.75rem"
+      }
+    },
+    "spacing": {
+      "section": "3rem",
+      "item": "1.5rem",
+      "padding": "3.5rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": false,
+          "layout": "vertical",
+          "alignment": "left"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "marginBottom": "1rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "THE MISSION",
+          "alignment": "left",
+          "fontStyle": "italic"
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "borderLeft": "8px solid #f0fdfa",
+          "paddingLeft": "1.5rem"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "THE JOURNEY",
+          "layout": "timeline",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "compact"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "THE FOUNDATION",
+          "layout": "detailed",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 4,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "THE TOOLKIT",
+          "layout": "cloud",
+          "showAsTags": true
+        },
+        "order": 5,
+        "layout": {
+          "width": "full",
+          "position": "right"
+        },
+        "styling": {
+          "background": "#0d9488",
+          "padding": "2rem",
+          "color": "#ffffff"
+        }
+      },
+      {
+        "id": "personal",
+        "type": "personal",
+        "component": "PersonalSection",
+        "props": {
+          "layout": "vertical",
+          "showIcons": true
+        },
+        "order": 6,
+        "layout": {
+          "width": "full",
+          "position": "right"
+        },
+        "styling": {
+          "background": "#0d9488",
+          "padding": "2rem",
+          "color": "#ffffff"
+        }
+      }
+    ]
+  },
+  "ats": {
+    "id": "ats",
+    "name": "ATS Friendly",
+    "description": "Optimized for applicant tracking systems with clean formatting",
+    "layout": "single-column",
+    "theme": {
+      "primary": "#000000",
+      "secondary": "#374151",
+      "background": "#ffffff",
+      "text": "#000000",
+      "accent": "#6b7280"
+    },
+    "typography": {
+      "fontFamily": "'Arial', sans-serif",
+      "headerFont": "'Arial', sans-serif",
+      "sizes": {
+        "h1": "1.5rem",
+        "h2": "1rem",
+        "h3": "0.875rem",
+        "body": "0.75rem",
+        "small": "0.625rem"
+      }
+    },
+    "spacing": {
+      "section": "1rem",
+      "item": "0.5rem",
+      "padding": "1rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": false,
+          "layout": "vertical",
+          "alignment": "left"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "personal",
+        "type": "personal",
+        "component": "PersonalSection",
+        "props": {
+          "layout": "horizontal",
+          "showIcons": true
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "SUMMARY",
+          "alignment": "left",
+          "fontStyle": "normal"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "EXPERIENCE",
+          "layout": "compact",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "compact"
+        },
+        "order": 4,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "EDUCATION",
+          "layout": "compact",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 5,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "SKILLS",
+          "layout": "list",
+          "showAsTags": false
+        },
+        "order": 6,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      }
+    ]
+  },
+  "executive": {
+    "id": "executive",
+    "name": "Executive",
+    "description": "Professional design for senior-level positions",
+    "layout": "two-column",
+    "theme": {
+      "primary": "#111827",
+      "secondary": "#6b7280",
+      "background": "#ffffff",
+      "text": "#111827",
+      "accent": "#d97706"
+    },
+    "typography": {
+      "fontFamily": "'Times New Roman', serif",
+      "headerFont": "'Times New Roman', serif",
+      "sizes": {
+        "h1": "2rem",
+        "h2": "1.25rem",
+        "h3": "1rem",
+        "body": "0.875rem",
+        "small": "0.75rem"
+      }
+    },
+    "spacing": {
+      "section": "2rem",
+      "item": "1rem",
+      "padding": "3rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": true,
+          "layout": "horizontal",
+          "alignment": "left"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "borderBottom": "1px solid #d97706",
+          "paddingBottom": "1rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "EXECUTIVE SUMMARY",
+          "alignment": "left",
+          "fontStyle": "normal"
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "PROFESSIONAL EXPERIENCE",
+          "layout": "detailed",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "full"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "EDUCATION & CREDENTIALS",
+          "layout": "detailed",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 4,
+        "layout": {
+          "width": "half",
+          "position": "right"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "CORE COMPETENCIES",
+          "layout": "list",
+          "showAsTags": false,
+          "columns": 1
+        },
+        "order": 5,
+        "layout": {
+          "width": "half",
+          "position": "right"
+        }
+      }
+    ]
+  },
+  "minimalist": {
+    "id": "minimalist",
+    "name": "Minimalist",
+    "description": "Clean and simple design with maximum whitespace",
+    "layout": "single-column",
+    "theme": {
+      "primary": "#000000",
+      "secondary": "#666666",
+      "background": "#ffffff",
+      "text": "#000000",
+      "accent": "#999999"
+    },
+    "typography": {
+      "fontFamily": "'Helvetica', sans-serif",
+      "headerFont": "'Helvetica', sans-serif",
+      "sizes": {
+        "h1": "1.75rem",
+        "h2": "1rem",
+        "h3": "0.875rem",
+        "body": "0.75rem",
+        "small": "0.625rem"
+      }
+    },
+    "spacing": {
+      "section": "3rem",
+      "item": "1.5rem",
+      "padding": "4rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": false,
+          "layout": "vertical",
+          "alignment": "left"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "marginBottom": "3rem"
+        }
+      },
+      {
+        "id": "personal",
+        "type": "personal",
+        "component": "PersonalSection",
+        "props": {
+          "layout": "horizontal",
+          "showIcons": false
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "marginBottom": "3rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "",
+          "alignment": "left",
+          "fontStyle": "normal"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "marginBottom": "3rem"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "Experience",
+          "layout": "compact",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "compact"
+        },
+        "order": 4,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "marginBottom": "3rem"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "Education",
+          "layout": "compact",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 5,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "marginBottom": "3rem"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "Skills",
+          "layout": "cloud",
+          "showAsTags": false
+        },
+        "order": 6,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      }
+    ]
+  },
+  "elegant": {
+    "id": "elegant",
+    "name": "Elegant",
+    "description": "Sophisticated design with serif typography and gold accents",
+    "layout": "single-column",
+    "theme": {
+      "primary": "#6b8e23",
+      "secondary": "#556b2f",
+      "background": "#fafafa",
+      "text": "#2c2c2c",
+      "accent": "#d4af37"
+    },
+    "typography": {
+      "fontFamily": "'Garamond', serif",
+      "headerFont": "'Garamond', serif",
+      "sizes": {
+        "h1": "2.5rem",
+        "h2": "1.25rem",
+        "h3": "1rem",
+        "body": "0.875rem",
+        "small": "0.75rem"
+      }
+    },
+    "spacing": {
+      "section": "2.5rem",
+      "item": "1.25rem",
+      "padding": "3rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": false,
+          "layout": "vertical",
+          "alignment": "center"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        },
+        "styling": {
+          "borderBottom": "2px solid #6b8e23",
+          "paddingBottom": "1.5rem",
+          "marginBottom": "2rem"
+        }
+      },
+      {
+        "id": "personal",
+        "type": "personal",
+        "component": "PersonalSection",
+        "props": {
+          "layout": "inline",
+          "showIcons": false
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        },
+        "styling": {
+          "marginBottom": "2rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "Profile",
+          "alignment": "justify",
+          "fontStyle": "italic"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "Professional Experience",
+          "layout": "detailed",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "full"
+        },
+        "order": 4,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "Education",
+          "layout": "detailed",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 5,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "Skills & Expertise",
+          "layout": "grid",
+          "showAsTags": false,
+          "columns": 2
+        },
+        "order": 6,
+        "layout": {
+          "width": "full",
+          "position": "center"
+        }
+      }
+    ]
+  },
+  "professional": {
+    "id": "professional",
+    "name": "Professional",
+    "description": "Corporate design with gold accents and balanced layout",
+    "layout": "two-column",
+    "theme": {
+      "primary": "#111827",
+      "secondary": "#4b5563",
+      "background": "#ffffff",
+      "text": "#111827",
+      "accent": "#d97706"
+    },
+    "typography": {
+      "fontFamily": "'Calibri', sans-serif",
+      "headerFont": "'Calibri', sans-serif",
+      "sizes": {
+        "h1": "2rem",
+        "h2": "1.125rem",
+        "h3": "1rem",
+        "body": "0.875rem",
+        "small": "0.75rem"
+      }
+    },
+    "spacing": {
+      "section": "1.5rem",
+      "item": "0.75rem",
+      "padding": "2rem"
+    },
+    "sections": [
+      {
+        "id": "header",
+        "type": "header",
+        "component": "HeaderSection",
+        "props": {
+          "showPhoto": true,
+          "layout": "horizontal",
+          "alignment": "left"
+        },
+        "order": 1,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        },
+        "styling": {
+          "background": "#111827",
+          "color": "#ffffff",
+          "padding": "2rem",
+          "marginBottom": "1.5rem"
+        }
+      },
+      {
+        "id": "summary",
+        "type": "summary",
+        "component": "SummarySection",
+        "props": {
+          "title": "Professional Summary",
+          "alignment": "left",
+          "fontStyle": "normal"
+        },
+        "order": 2,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "experience",
+        "type": "experience",
+        "component": "ExperienceSection",
+        "props": {
+          "title": "Experience",
+          "layout": "detailed",
+          "showDates": true,
+          "showCompany": true,
+          "dateFormat": "full"
+        },
+        "order": 3,
+        "layout": {
+          "width": "full",
+          "position": "left"
+        }
+      },
+      {
+        "id": "education",
+        "type": "education",
+        "component": "EducationSection",
+        "props": {
+          "title": "Education",
+          "layout": "detailed",
+          "showYear": true,
+          "showInstitution": true
+        },
+        "order": 4,
+        "layout": {
+          "width": "half",
+          "position": "right"
+        }
+      },
+      {
+        "id": "skills",
+        "type": "skills",
+        "component": "SkillsSection",
+        "props": {
+          "title": "Skills",
+          "layout": "cloud",
+          "showAsTags": true
+        },
+        "order": 5,
+        "layout": {
+          "width": "half",
+          "position": "right"
+        }
+      }
+    ]
+  }
+}

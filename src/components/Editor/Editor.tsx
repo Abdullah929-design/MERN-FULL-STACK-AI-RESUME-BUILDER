@@ -4,19 +4,24 @@ import { SummaryForm } from './SummaryForm';
 import { ExperienceForm } from './ExperienceForm';
 import { EducationForm } from './EducationForm';
 import { SkillsForm } from './SkillsForm';
+import { CustomSectionsForm } from './CustomSectionsForm';
 import { ImportResume } from './ImportResume';
-import { User, Briefcase, GraduationCap, Wrench, Sparkles } from 'lucide-react';
+import { SampleTemplatesSelector } from './SampleTemplatesSelector';
+import { User, Briefcase, GraduationCap, Wrench, Sparkles, Layout } from 'lucide-react';
 
 
 export const Editor: React.FC = () => {
   return (
     <div className="flex flex-col gap-8 pb-20">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Resume Editor</h1>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Resume Editor</h1>
           <p className="text-gray-500 text-sm">Build your professional identity</p>
         </div>
-        <ImportResume />
+        <div className="flex flex-wrap items-center gap-3">
+          <SampleTemplatesSelector />
+          <ImportResume />
+        </div>
       </header>
 
       <div className="space-y-12">
@@ -67,6 +72,16 @@ export const Editor: React.FC = () => {
           </div>
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm transition-all hover:shadow-md">
             <SkillsForm />
+          </div>
+        </section>
+
+        <section id="custom-sections">
+          <div className="flex items-center gap-2 mb-4 text-primary">
+            <Layout size={20} className="text-pink-600" />
+            <h2 className="text-lg font-semibold text-gray-800">Custom Sections</h2>
+          </div>
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm transition-all hover:shadow-md">
+            <CustomSectionsForm />
           </div>
         </section>
       </div>

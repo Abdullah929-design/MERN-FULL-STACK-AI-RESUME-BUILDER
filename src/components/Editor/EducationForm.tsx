@@ -44,7 +44,7 @@ export const EducationForm: React.FC = () => {
                     type="text"
                     value={edu.institution}
                     onChange={(e) => updateEducation(edu.id, { institution: e.target.value })}
-                    placeholder="Stanford University"
+                    placeholder="Institution Name"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-green-500 outline-none transition-all"
                   />
                 </div>
@@ -54,7 +54,7 @@ export const EducationForm: React.FC = () => {
                     type="text"
                     value={edu.degree}
                     onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
-                    placeholder="B.S. Computer Science"
+                    placeholder="Degree or Certificate"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-green-500 outline-none transition-all"
                   />
                 </div>
@@ -64,7 +64,7 @@ export const EducationForm: React.FC = () => {
                     type="text"
                     value={edu.year}
                     onChange={(e) => updateEducation(edu.id, { year: e.target.value })}
-                    placeholder="2016 - 2020"
+                    placeholder="Graduation Year or Range"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-green-500 outline-none transition-all"
                   />
                 </div>

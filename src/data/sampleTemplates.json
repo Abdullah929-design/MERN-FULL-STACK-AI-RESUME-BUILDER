@@ -1,0 +1,147 @@
+[
+  {
+    "id": "tech-sample",
+    "title": "Software Engineer",
+    "description": "Tech stack: React, Node.js, TypeScript",
+    "sections": {
+      "personal": {
+        "name": "Sarah Chen",
+        "email": "sarah.chen@techmail.com",
+        "phone": "+1 (555) 123-4567",
+        "location": "San Francisco, CA",
+        "title": "Senior Full Stack Engineer"
+      },
+      "summary": "Passionate Senior Full Stack Engineer with 8+ years of experience building scalable web applications. Expert in React ecosystems and cloud-native backends. Proven track record of leading high-performing teams to deliver mission-critical software on schedule.",
+      "experience": [
+        {
+          "id": "exp-1",
+          "company": "TechStream Systems",
+          "role": "Lead Software Engineer",
+          "startDate": "2020-03",
+          "endDate": "Present",
+          "description": "Led the digital transformation of the core customer portal, serving 2M+ users. Spearheaded the migration from monolithic to microservices architecture, reducing deployment time by 40% using Jenkins and Docker. Mentored a team of 10 junior developers.",
+          "bullets": []
+        },
+        {
+          "id": "exp-2",
+          "company": "Innovate Labs",
+          "role": "Full Stack Developer",
+          "startDate": "2016-01",
+          "endDate": "2020-02",
+          "description": "Developed several enterprise-grade SaaS products using React and GraphQL. Optimized database queries, reducing average page load time by 30%. Implemented responsive designs for key product features.",
+          "bullets": []
+        }
+      ],
+      "education": [
+        {
+          "id": "edu-1",
+          "institution": "Stanford University",
+          "degree": "M.S. in Computer Science",
+          "year": "2015"
+        }
+      ],
+      "skills": ["React", "TypeScript", "Node.js", "PostgreSQL", "AWS", "Docker", "Git"],
+      "customSections": []
+    }
+  },
+  {
+    "id": "marketing-sample",
+    "title": "Marketing Manager",
+    "description": "Expert in SEO, PPC, and Brand Growth",
+    "sections": {
+      "personal": {
+        "name": "James Wilson",
+        "email": "j.wilson@marketingpro.com",
+        "phone": "+44 20 7946 0958",
+        "location": "London, UK",
+        "title": "Growth Marketing Manager"
+      },
+      "summary": "Data-driven Marketing Manager with a track record of driving a 200% increase in organic traffic and a 50% improvement in conversion rates within 12 months. Proficient in multiple marketing automation platforms and advanced SEO analytics.",
+      "experience": [
+        {
+          "id": "exp-m-1",
+          "company": "Digital Reach Agency",
+          "role": "Senior Growth Marketer",
+          "startDate": "2019-06",
+          "endDate": "Present",
+          "description": "Managed a monthly digital marketing budget of £50k across social, search, and display channels. Developed and executed successful multi-channel growth strategies. Achieved a significant ROI improvement of 25% year-on-year.",
+          "bullets": []
+        }
+      ],
+      "education": [
+        {
+          "id": "edu-m-1",
+          "institution": "University of Manchester",
+          "degree": "B.A. in Marketing and Communications",
+          "year": "2018"
+        }
+      ],
+      "skills": ["SEO", "Google Ads", "Content Strategy", "Email Marketing", "CRM (HubSpot)", "Market Research"],
+      "customSections": [
+        {
+          "id": "cs-m-1",
+          "title": "Certifications",
+          "items": [
+            {
+              "id": "item-m-1",
+              "title": "Google Analytics IQ",
+              "subtitle": "Google",
+              "date": "2022",
+              "description": ""
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "design-sample",
+    "title": "Graphic Designer",
+    "description": "UI/UX & Branding Specialist",
+    "sections": {
+      "personal": {
+        "name": "Emma Martinez",
+        "email": "e.martinez.creative@design.io",
+        "phone": "+34 912 345 678",
+        "location": "Madrid, Spain",
+        "title": "Lead Graphic Designer"
+      },
+      "summary": "Creative and detailed Graphic Designer with 6+ years of experience in luxury branding and product interface design. Expert in Adobe Creative Suite and Figma, with a strong focus on typography and minimalist visual communication.",
+      "experience": [
+        {
+          "id": "exp-d-1",
+          "company": "Pixel Perfect Studio",
+          "role": "Senior Visual Designer",
+          "startDate": "2018-02",
+          "endDate": "Present",
+          "description": "Created cohesive brand identities for 15+ startups, helping them secure over $20M in Series A funding. Redesigned the primary interface for a top-tier retail app, improving User Engagement by 15%.",
+          "bullets": []
+        }
+      ],
+      "education": [
+        {
+          "id": "edu-d-1",
+          "institution": "ESNE University School of Design",
+          "degree": "Degree in Graphic Design",
+          "year": "2017"
+        }
+      ],
+      "skills": ["Adobe Photoshop", "Adobe Illustrator", "Figma", "UI/UX Design", "Branding", "Motion Graphics"],
+      "customSections": [
+        {
+          "id": "cs-d-1",
+          "title": "AWARDS",
+          "items": [
+            {
+              "id": "item-d-1",
+              "title": "Red Dot Design Award",
+              "subtitle": "International Design Competition",
+              "date": "2021",
+              "description": "Won for the visual identity of 'GreenFuture' app."
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

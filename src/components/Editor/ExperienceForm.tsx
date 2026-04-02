@@ -69,7 +69,7 @@ export const ExperienceForm: React.FC = () => {
                     type="text"
                     value={exp.company}
                     onChange={(e) => updateExperience(exp.id, { company: e.target.value })}
-                    placeholder="Google"
+                    placeholder="Company Name"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-orange-500 outline-none transition-all"
                   />
                 </div>
@@ -79,7 +79,7 @@ export const ExperienceForm: React.FC = () => {
                     type="text"
                     value={exp.role}
                     onChange={(e) => updateExperience(exp.id, { role: e.target.value })}
-                    placeholder="Senior Developer"
+                    placeholder="Job Title"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-orange-500 outline-none transition-all"
                   />
                 </div>
@@ -89,7 +89,7 @@ export const ExperienceForm: React.FC = () => {
                     type="text"
                     value={exp.startDate}
                     onChange={(e) => updateExperience(exp.id, { startDate: e.target.value })}
-                    placeholder="Jan 2020"
+                    placeholder="Start Date"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-orange-500 outline-none transition-all"
                   />
                 </div>
@@ -99,7 +99,7 @@ export const ExperienceForm: React.FC = () => {
                     type="text"
                     value={exp.endDate}
                     onChange={(e) => updateExperience(exp.id, { endDate: e.target.value })}
-                    placeholder="Present"
+                    placeholder="End Date or Present"
                     className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-orange-500 outline-none transition-all"
                   />
                 </div>

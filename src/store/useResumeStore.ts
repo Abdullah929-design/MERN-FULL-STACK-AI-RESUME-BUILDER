@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Resume, AIUsage, Experience, Education } from '../types/resume';
+import type { Resume, AIUsage, Experience, Education, CustomSectionItem } from '../types/resume';
 
 
 interface ResumeState {
@@ -23,6 +23,16 @@ interface ResumeState {
   removeSkill: (skill: string) => void;
   setSkills: (skills: string[]) => void;
   
+  // Custom Sections
+  addCustomSection: (title: string) => void;
+  updateCustomSectionTitle: (id: string, title: string) => void;
+  removeCustomSection: (id: string) => void;
+  reorderCustomSection: (id: string, direction: 'up' | 'down') => void;
+  
+  addCustomItem: (sectionId: string) => void;
+  updateCustomItem: (sectionId: string, itemId: string, item: Partial<CustomSectionItem>) => void;
+  removeCustomItem: (sectionId: string, itemId: string) => void;
+  
   setTemplate: (template: Resume['template']) => void;
   setResume: (resume: Resume) => void;
   
@@ -40,11 +50,13 @@ const initialResume: Resume = {
       phone: '',
       location: '',
       title: '',
+      photoUrl: '',
     },
     summary: '',
     experience: [],
     education: [],
     skills: [],
+    customSections: [],
   },
 };
 
@@ -85,7 +97,7 @@ export const useResumeStore = create<ResumeState>()(
             sections: {
               ...state.resume.sections,
               experience: [
-                ...state.resume.sections.experience,
+                ...(state.resume.sections.experience || []),
                 {
                   id: crypto.randomUUID(),
                   company: '',
@@ -106,7 +118,7 @@ export const useResumeStore = create<ResumeState>()(
             ...state.resume,
             sections: {
               ...state.resume.sections,
-              experience: state.resume.sections.experience.map((exp) =>
+              experience: (state.resume.sections.experience || []).map((exp) =>
                 exp.id === id ? { ...exp, ...experience } : exp
               ),
             },
@@ -119,7 +131,7 @@ export const useResumeStore = create<ResumeState>()(
             ...state.resume,
             sections: {
               ...state.resume.sections,
-              experience: state.resume.sections.experience.filter((exp) => exp.id !== id),
+              experience: (state.resume.sections.experience || []).filter((exp) => exp.id !== id),
             },
           },
         })),
@@ -131,7 +143,7 @@ export const useResumeStore = create<ResumeState>()(
             sections: {
               ...state.resume.sections,
               education: [
-                ...state.resume.sections.education,
+                ...(state.resume.sections.education || []),
                 { id: crypto.randomUUID(), institution: '', degree: '', year: '' },
               ],
             },
@@ -144,7 +156,7 @@ export const useResumeStore = create<ResumeState>()(
             ...state.resume,
             sections: {
               ...state.resume.sections,
-              education: state.resume.sections.education.map((edu) =>
+              education: (state.resume.sections.education || []).map((edu) =>
                 edu.id === id ? { ...edu, ...education } : edu
               ),
             },
@@ -157,7 +169,7 @@ export const useResumeStore = create<ResumeState>()(
             ...state.resume,
             sections: {
               ...state.resume.sections,
-              education: state.resume.sections.education.filter((edu) => edu.id !== id),
+              education: (state.resume.sections.education || []).filter((edu) => edu.id !== id),
             },
           },
         })),
@@ -168,7 +180,7 @@ export const useResumeStore = create<ResumeState>()(
             ...state.resume,
             sections: {
               ...state.resume.sections,
-              skills: [...new Set([...state.resume.sections.skills, skill])],
+              skills: [...new Set([...(state.resume.sections.skills || []), skill])],
             },
           },
         })),
@@ -179,7 +191,7 @@ export const useResumeStore = create<ResumeState>()(
             ...state.resume,
             sections: {
               ...state.resume.sections,
-              skills: state.resume.sections.skills.filter((s) => s !== skill),
+              skills: (state.resume.sections.skills || []).filter((s) => s !== skill),
             },
           },
         })),
@@ -197,6 +209,124 @@ export const useResumeStore = create<ResumeState>()(
           };
         }),
 
+      // Custom Sections Actions
+      addCustomSection: (title) =>
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            sections: {
+              ...state.resume.sections,
+              customSections: [
+                ...(state.resume.sections.customSections || []),
+                { id: crypto.randomUUID(), title, items: [] },
+              ],
+            },
+          },
+        })),
+
+      updateCustomSectionTitle: (id, title) =>
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            sections: {
+              ...state.resume.sections,
+              customSections: (state.resume.sections.customSections || []).map((s) =>
+                s.id === id ? { ...s, title } : s
+              ),
+            },
+          },
+        })),
+
+      removeCustomSection: (id) =>
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            sections: {
+              ...state.resume.sections,
+              customSections: (state.resume.sections.customSections || []).filter((s) => s.id !== id),
+            },
+          },
+        })),
+
+      reorderCustomSection: (id, direction) =>
+        set((state) => {
+          const sections = [...(state.resume.sections.customSections || [])];
+          const index = sections.findIndex((s) => s.id === id);
+          if (index === -1) return state;
+
+          const newIndex = direction === 'up' ? index - 1 : index + 1;
+          if (newIndex < 0 || newIndex >= sections.length) return state;
+
+          [sections[index], sections[newIndex]] = [sections[newIndex], sections[index]];
+
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                customSections: sections,
+              },
+            },
+          };
+        }),
+
+      addCustomItem: (sectionId) =>
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            sections: {
+              ...state.resume.sections,
+              customSections: (state.resume.sections.customSections || []).map((s) =>
+                s.id === sectionId
+                  ? {
+                      ...s,
+                      items: [
+                        ...s.items,
+                        { id: crypto.randomUUID(), title: '', subtitle: '', date: '', description: '' },
+                      ],
+                    }
+                  : s
+              ),
+            },
+          },
+        })),
+
+      updateCustomItem: (sectionId, itemId, item) =>
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            sections: {
+              ...state.resume.sections,
+              customSections: (state.resume.sections.customSections || []).map((s) =>
+                s.id === sectionId
+                  ? {
+                      ...s,
+                      items: s.items.map((i) => (i.id === itemId ? { ...i, ...item } : i)),
+                    }
+                  : s
+              ),
+            },
+          },
+        })),
+
+      removeCustomItem: (sectionId, itemId) =>
+        set((state) => ({
+          resume: {
+            ...state.resume,
+            sections: {
+              ...state.resume.sections,
+              customSections: (state.resume.sections.customSections || []).map((s) =>
+                s.id === sectionId
+                  ? {
+                      ...s,
+                      items: s.items.filter((i) => i.id !== itemId),
+                    }
+                  : s
+              ),
+            },
+          },
+        })),
+
       setTemplate: (template) =>
         set((state) => ({
           resume: { ...state.resume, template },
@@ -210,6 +340,17 @@ export const useResumeStore = create<ResumeState>()(
             : [];
           resume.sections.skills = [...new Set(resume.sections.skills)];
         }
+        
+        // Ensure customSections exists
+        if (!resume.sections.customSections) {
+          resume.sections.customSections = [];
+        }
+
+        // Ensure photoUrl exists
+        if (!resume.sections.personal.photoUrl) {
+          resume.sections.personal.photoUrl = '';
+        }
+        
         set({ resume });
       },
 
@@ -236,6 +377,20 @@ export const useResumeStore = create<ResumeState>()(
     }),
     {
       name: 'resume-storage',
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        if (version === 0) {
+          if (persistedState.resume?.sections && !persistedState.resume.sections.customSections) {
+            persistedState.resume.sections.customSections = [];
+          }
+        }
+        if (version < 2) {
+          if (persistedState.resume?.sections?.personal && !persistedState.resume.sections.personal.photoUrl) {
+            persistedState.resume.sections.personal.photoUrl = '';
+          }
+        }
+        return persistedState as ResumeState;
+      },
     }
   )
 );

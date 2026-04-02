@@ -7,7 +7,7 @@ interface TemplateProps {
 }
 
 export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
-  const { personal, summary, experience, education, skills } = resume.sections;
+  const { personal, summary, experience, education, skills, customSections } = resume.sections;
 
   return (
     <div className="p-16 bg-white min-h-[1100px] text-gray-900 font-serif leading-relaxed">
@@ -94,6 +94,32 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
             </p>
           </div>
         )}
+
+        {/* Custom Sections */}
+        {customSections?.map((section) => (
+          <div key={section.id} className="space-y-6">
+            <h2 className="text-xl font-bold border-b border-gray-300 pb-1 flex items-center gap-2 uppercase">
+              <span className="w-2 h-2 bg-gray-900 rounded-full" />
+              {section.title}
+            </h2>
+            <div className="space-y-6">
+              {section.items.map((item) => (
+                <div key={item.id} className="space-y-1">
+                  <div className="flex justify-between items-baseline font-bold italic">
+                    <h3 className="text-base text-gray-900">{item.title || "Title"}</h3>
+                    <span className="text-sm font-normal text-gray-600 italic">{item.date}</span>
+                  </div>
+                  {item.subtitle && <p className="text-sm font-bold text-gray-800 uppercase tracking-wide">{item.subtitle}</p>}
+                  {item.description && (
+                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap pl-4 italic border-l-2 border-gray-100">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

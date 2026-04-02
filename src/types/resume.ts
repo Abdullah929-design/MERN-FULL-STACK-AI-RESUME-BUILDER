@@ -4,6 +4,7 @@ export interface PersonalInfo {
   phone: string;
   location: string;
   title: string;
+  photoUrl?: string;
 }
 
 export interface Experience {
@@ -23,15 +24,30 @@ export interface Education {
   year: string;
 }
 
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  description: string;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  items: CustomSectionItem[];
+}
+
 export interface Resume {
   title: string;
-  template: 'modern' | 'classic' | 'ats';
+  template: 'modern' | 'classic' | 'ats' | 'executive' | 'minimalist' | 'creative' | 'elegant' | 'professional' | 'academia' | 'compact' | 'editorial' | 'nordic' | 'timeline';
   sections: {
     personal: PersonalInfo;
     summary: string;
     experience: Experience[];
     education: Education[];
     skills: string[];
+    customSections: CustomSection[];
   };
 }
 
