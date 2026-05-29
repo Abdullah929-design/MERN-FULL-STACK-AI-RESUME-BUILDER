@@ -1,13 +1,35 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import axios from 'axios';
+import { randomUUID } from 'crypto';
+import { kv } from '@vercel/kv';
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const FREELLMAPI_API_KEY = process.env.FREELLMAPI_API_KEY || process.env.OPENROUTER_API_KEY;
+const FREELLMAPI_API_URL = process.env.FREELLMAPI_API_URL || 'http://localhost:3001/v1/chat/completions';
+const FREELLMAPI_MODEL = process.env.FREELLMAPI_MODEL || 'mistral-large-latest';
+
+interface UserStats {
+  [key: string]: string | number;
+  lastReset: string;
+}
+
+const ipCache = new Map<string, UserStats>();
+
+const LIMITS: Record<string, number> = {
+  'summary': 100,
+  'improve': 100,
+  'skills': 100,
+  'extract': 100,
+  'linkedin_extract': 100,
+  'ats_score': 100,
+  'cover_letter': 100,
+  'share_content': 100
+};
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Device-ID');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -18,15 +40,77 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { type, input } = req.body || {};
+  
+  // Extraction
+  const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
+  const deviceId = req.headers['x-device-id'] as string;
+  const identifier = deviceId || ip; // Use Device Fingerprint, fallback to IP
+  
+  const today = new Date().toISOString().split('T')[0];
+  const cacheKey = `ai_limit_${identifier}`;
+
+  // Limit Check
+  if (type !== 'ping') {
+    let userStats: UserStats | null = null;
+    
+    // Try Vercel KV for persistence across serverless cold starts
+    try {
+      userStats = await kv.get<UserStats>(cacheKey);
+    } catch (e) {
+      console.warn('[AI API] Vercel KV not configured or failed, falling back to memory map.');
+    }
+
+    if (!userStats) {
+      userStats = ipCache.get(identifier) || { lastReset: today };
+    }
+
+    if (userStats.lastReset !== today) {
+      // Reset for new day
+      Object.keys(userStats).forEach(key => { if (key !== 'lastReset') delete userStats![key]; });
+      userStats.lastReset = today;
+    }
+
+    const currentCount = (userStats[type as string] as number) || 0;
+    const limit = LIMITS[type as string] || 5;
+
+    if (currentCount >= limit) {
+      return res.status(429).json({ 
+        error: 'Daily API limit reached for this device.', 
+        info: 'Each feature has a daily limit that resets every 24 hours based on your device fingerprint.' 
+      });
+    }
+
+    // Increment
+    userStats[type as string] = currentCount + 1;
+    
+    try {
+      await kv.set(cacheKey, userStats);
+    } catch (e) {
+      ipCache.set(identifier, userStats);
+    }
+  }
+
+  console.log('[AI API] Request received:', { type, ip, method: req.method });
+
+  if (type === 'ping' || req.query.type === 'ping') {
+    return res.status(200).json({ 
+      status: 'ok', 
+      hasKey: !!FREELLMAPI_API_KEY,
+      nodeVersion: process.version,
+      timestamp: new Date().toISOString()
+    });
+  }
 
   if (!type || !input) {
+    console.error('[AI API] Missing type or input');
     return res.status(400).json({ error: 'Missing required fields: type and input' });
   }
 
-  if (!GROQ_API_KEY) {
+  if (!FREELLMAPI_API_KEY) {
+    console.error('[AI API] FREELLMAPI_API_KEY is missing');
     return res.status(500).json({ 
-      error: 'GROQ_API_KEY is not set in Vercel Environment Variables.',
-      tip: 'Go to your Vercel Dashboard > Settings > Environment Variables and add GROQ_API_KEY.'
+      error: 'FREELLMAPI_API_KEY is not set in Environment Variables.',
+      tip: 'Add FREELLMAPI_API_KEY to your Vercel Settings.'
     });
   }
 
@@ -261,43 +345,46 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
         return res.status(400).json({ error: 'Invalid request type' });
     }
 
-    const model = 'llama-3.1-8b-instant';
+    const model = FREELLMAPI_MODEL;
+    console.log('[AI API] Sending request to FreeLLMAPI...', { model, type });
 
-    const response = await fetch(GROQ_API_URL, {
-      method: 'POST',
+    const response = await axios.post(FREELLMAPI_API_URL, {
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.05
+    }, {
       headers: {
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'Authorization': `Bearer ${FREELLMAPI_API_KEY}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://github.com/Abdullah929-design/ResumeBuilder',
+        'X-Title': 'Resume Builder AI',
       },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature: 0.05,
-        response_format: { type: "json_object" }
-      }),
+      timeout: 25000, // Extend timeout for slower LLM responses
     });
 
-    const data: any = await response.json();
-    
+    const data = response.data;
+    console.log('[AI API] FreeLLMAPI response received');
+
     if (data.error) {
-      return res.status(502).json({ error: 'Groq API Error', details: data.error.message });
+      console.error('[AI API] FreeLLMAPI Error:', data.error);
+      return res.status(502).json({ error: 'FreeLLMAPI API Error', details: data.error.message || data.error });
     }
 
     if (data.choices && data.choices[0]) {
       let contentString = data.choices[0].message.content;
-      
+
       try {
         if (contentString.includes('```json')) {
           contentString = contentString.split('```json')[1].split('```')[0];
         } else if (contentString.includes('```')) {
           contentString = contentString.split('```')[1].split('```')[0];
         }
-        
+
         const content = JSON.parse(contentString.trim());
-        
+
         // Helper to flatten skills into individual strings, handling categorized formats
         const sanitizeSkillList = (list: any[]): string[] => {
           const sanitized: string[] = [];
@@ -377,7 +464,7 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
                 ? `${entry.startDate}\u2013${entry.endDate}`
                 : entry.startDate || entry.endDate || '';
               sections.education.push({
-                id: entry.id || crypto.randomUUID(),
+                id: entry.id || randomUUID(),
                 institution: entry.company || '',
                 degree: entry.role || '',
                 year
@@ -410,6 +497,18 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
       return res.status(500).json({ error: 'Invalid response structure from AI' });
     }
   } catch (error: any) {
-        return res.status(500).json({ error: 'Internal server error', details: error.message, stack: error.stack });
+    const status = error.response?.status || 500;
+    console.error('[AI API] Critical Error:', {
+      status,
+      message: error.message,
+      stack: error.stack,
+      response: error.response?.data
+    });
+    return res.status(status).json({ 
+      error: 'Internal server error', 
+      details: error.message,
+      stack: error.stack,
+      ...(error.response?.data ? { apiError: error.response.data } : {})
+    });
   }
 }
