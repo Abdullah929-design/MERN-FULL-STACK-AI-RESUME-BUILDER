@@ -5,25 +5,12 @@ import { ExperienceForm } from './ExperienceForm';
 import { EducationForm } from './EducationForm';
 import { SkillsForm } from './SkillsForm';
 import { CustomSectionsForm } from './CustomSectionsForm';
-import { ImportResume } from './ImportResume';
-import { SampleTemplatesSelector } from './SampleTemplatesSelector';
 import { User, Briefcase, GraduationCap, Wrench, Sparkles, Layout } from 'lucide-react';
 
 
 export const Editor: React.FC = () => {
   return (
     <div className="flex flex-col gap-8 pb-20">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Resume Editor</h1>
-          <p className="text-gray-500 text-sm">Build your professional identity</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <SampleTemplatesSelector />
-          <ImportResume />
-        </div>
-      </header>
-
       <div className="space-y-12">
         <section id="personal-info">
           <div className="flex items-center gap-2 mb-4 text-primary">

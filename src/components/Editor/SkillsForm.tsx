@@ -4,7 +4,7 @@ import { X, Plus, Sparkles, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 export const SkillsForm: React.FC = () => {
-  const { resume, addSkill, removeSkill, setSkills, incrementAIUsage, isAIALimitReached } = useResumeStore();
+  const { resume, addSkill, removeSkill, setSkills, incrementAIUsage, isAIALimitReached, setShowAILimitPopup } = useResumeStore();
   const { skills, personal } = resume.sections;
   const [newSkill, setNewSkill] = useState('');
   const [isSuggesting, setIsSuggesting] = useState(false);
@@ -18,8 +18,8 @@ export const SkillsForm: React.FC = () => {
   };
 
   const handleSuggestSkills = async () => {
-    if (isAIALimitReached()) {
-      alert("Daily AI limit reached. Try again tomorrow.");
+    if (isAIALimitReached('description')) {
+      setShowAILimitPopup(true);
       return;
     }
     if (!personal.title) {
@@ -37,7 +37,7 @@ export const SkillsForm: React.FC = () => {
         // Merge with existing skills
         const merged = [...new Set([...skills, ...response.data.skills])];
         setSkills(merged);
-        incrementAIUsage();
+        incrementAIUsage('description');
       }
     } catch (err) {
       console.error(err);
@@ -48,32 +48,36 @@ export const SkillsForm: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <label className="text-sm font-medium text-gray-700">Add your expertise</label>
+      <div className="flex justify-between items-center px-1 mb-1">
+        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+          Your Expertise
+          <span className="text-[10px] font-bold text-indigo-400">({skills.length}/15)</span>
+        </label>
         <button
           onClick={handleSuggestSkills}
-          disabled={isSuggesting}
-          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors disabled:opacity-50"
+          disabled={isSuggesting || skills.length >= 15}
+          className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors disabled:opacity-50"
         >
-          {isSuggesting ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-          Suggest Skills
+          {isSuggesting ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+          AI SUGGEST
         </button>
       </div>
 
-      <form onSubmit={handleAddSkill} className="flex gap-2">
+      <form onSubmit={handleAddSkill} className="relative group/form">
         <input
           type="text"
           value={newSkill}
           onChange={(e) => setNewSkill(e.target.value)}
-          placeholder="e.g. React, TypeScript, Project Management"
-          className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+          disabled={skills.length >= 15}
+          placeholder={skills.length >= 15 ? "Limit reached" : "Add a skill manually..."}
+          className="w-full pl-4 pr-14 py-3.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 shadow-sm text-sm font-medium"
         />
         <button
           type="submit"
-          disabled={!newSkill.trim()}
-          className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+          disabled={!newSkill.trim() || skills.length >= 15}
+          className="absolute right-1.5 top-1.5 bottom-1.5 px-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all disabled:opacity-50 flex items-center justify-center active:scale-95 shadow-sm"
         >
-          <Plus size={20} />
+          <Plus size={18} strokeWidth={3} />
         </button>
       </form>
 

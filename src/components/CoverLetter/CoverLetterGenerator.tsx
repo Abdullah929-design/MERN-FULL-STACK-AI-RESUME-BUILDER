@@ -7,7 +7,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer';
 import { CoverLetterDocument } from './CoverLetterPDF';
 
 export const CoverLetterGenerator: React.FC = () => {
-  const { resume, isAIALimitReached, incrementAIUsage } = useResumeStore();
+  const { resume, isAIALimitReached, incrementAIUsage, setShowAILimitPopup } = useResumeStore();
   const [jobDescription, setJobDescription] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,8 +32,8 @@ export const CoverLetterGenerator: React.FC = () => {
   const handleGenerate = async () => {
     if (!jobDescription.trim()) return;
     
-    if (isAIALimitReached()) {
-      setError("Daily AI limit reached (5/5). Please try again tomorrow.");
+    if (isAIALimitReached('coverLetter')) {
+      setShowAILimitPopup(true);
       return;
     }
 
@@ -67,7 +67,7 @@ ${resume.sections.skills.join(', ')}
 
       if (response.data && response.data.letter) {
         setResult(response.data);
-        incrementAIUsage();
+        incrementAIUsage('coverLetter');
       } else {
         throw new Error("Invalid response from AI");
       }

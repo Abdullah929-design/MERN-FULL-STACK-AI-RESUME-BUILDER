@@ -19,7 +19,7 @@ interface ATSScoreResponse {
 }
 
 export function ATSScanner() {
-  const { resume } = useResumeStore();
+  const { resume, isAIALimitReached, incrementAIUsage, setShowAILimitPopup } = useResumeStore();
   const [jobDescription, setJobDescription] = useState('');
   const [resumeText, setResumeText] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -56,6 +56,10 @@ export function ATSScanner() {
       setError('Please provide both a resume and a job description.');
       return;
     }
+    if (isAIALimitReached('ats')) {
+      setShowAILimitPopup(true);
+      return;
+    }
     setError('');
     setIsScanning(true);
     setResult(null);
@@ -72,8 +76,14 @@ export function ATSScanner() {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setResult(data as ATSScoreResponse);
+      incrementAIUsage('ats');
     } catch (err: any) {
-      setError(err.message || 'Failed to analyze resume.');
+      const msg = err.message || 'Failed to analyze resume.';
+      if (msg.toLowerCase().includes('json') || msg.toLowerCase().includes('token')) {
+        setError('Please refresh the page and try again.');
+      } else {
+        setError(msg);
+      }
     } finally {
       setIsScanning(false);
     }

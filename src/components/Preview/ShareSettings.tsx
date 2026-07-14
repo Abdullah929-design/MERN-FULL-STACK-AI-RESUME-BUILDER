@@ -5,7 +5,7 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function ShareSettings() {
-  const { resume } = useResumeStore();
+  const { resume, isAIALimitReached, incrementAIUsage, setShowAILimitPopup } = useResumeStore();
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -23,6 +23,10 @@ export function ShareSettings() {
   };
 
   const generateContent = async () => {
+    if (isAIALimitReached('social')) {
+      setShowAILimitPopup(true);
+      return;
+    }
     setIsGenerating(true);
     setError('');
     
@@ -66,6 +70,7 @@ export function ShareSettings() {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setContent(data);
+      incrementAIUsage('social');
     } catch (err: any) {
       setError(err.message || 'Failed to generate share content.');
     } finally {
@@ -75,16 +80,14 @@ export function ShareSettings() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 py-4 p-4 md:p-8">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-              <Share2 className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Share Public Profile</h2>
-              <p className="text-gray-500">Generate SEO-optimized content and social sharing copy.</p>
-            </div>
+      <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200">
+        <div className="mb-8 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+          <div className="p-4 bg-indigo-100 text-indigo-600 rounded-2xl shadow-inner">
+            <Share2 className="w-8 h-8" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Share Profile</h2>
+            <p className="text-gray-500 text-sm font-medium">Generate SEO-optimized content and social sharing copy</p>
           </div>
         </div>
 
@@ -93,12 +96,12 @@ export function ShareSettings() {
         <button 
           onClick={generateContent}
           disabled={isGenerating}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-2xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-2 shadow-lg shadow-indigo-100 active:scale-[0.98]"
         >
           {isGenerating ? (
-            <><RefreshCw className="w-5 h-5 animate-spin" /> Generating Magic Content...</>
+            <><RefreshCw className="w-5 h-5 animate-spin" /> <span>Syncing AI Content...</span></>
           ) : (
-            <><Sparkles className="w-5 h-5" /> Auto-generate Profile Metadata & LinkedIn Post</>
+            <><Sparkles className="w-5 h-5" /> <span>Generate Social Media Assets</span></>
           )}
         </button>
       </div>
@@ -235,7 +238,7 @@ export function ShareSettings() {
                     {content.shareMessage?.length || 0}/220
                   </span>
                 </div>
-                <div className="bg-blue-50/50 border border-blue-100 p-5 rounded-xl text-md text-gray-800 leading-relaxed min-h-[100px] whitespace-pre-wrap">
+                <div className="bg-blue-50/50 border border-blue-100 p-5 rounded-xl text-md text-gray-800 leading-relaxed min-h-[100px] whitespace-pre-wrap overflow-hidden">
                   {content.shareMessage}
                 </div>
                 <button 
@@ -249,9 +252,7 @@ export function ShareSettings() {
                   )}
                 </button>
             </div>
-
           </div>
-
         </div>
       )}
     </div>

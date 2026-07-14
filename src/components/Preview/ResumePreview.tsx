@@ -2,7 +2,7 @@ import React from 'react';
 import { useResumeStore } from '../../store/useResumeStore';
 import { TemplateSelector } from './TemplateSelector';
 import { TemplateGallery } from './TemplateGallery';
-import { DownloadPDF } from '../PDFExport';
+import { DownloadManager } from '../DownloadManager';
 
 import { ModernTemplate } from './templates/ModernTemplate';
 import { ClassicTemplate } from './templates/ClassicTemplate';
@@ -18,7 +18,11 @@ import { EditorialTemplate } from './templates/EditorialTemplate';
 import { NordicTemplate } from './templates/NordicTemplate';
 import { TimelineTemplate } from './templates/TimelineTemplate';
 
-export const ResumePreview: React.FC = () => {
+interface ResumePreviewProps {
+  hideControls?: boolean;
+}
+
+export const ResumePreview: React.FC<ResumePreviewProps> = ({ hideControls = false }) => {
   const { resume } = useResumeStore();
 
   if (!resume) {
@@ -63,20 +67,96 @@ export const ResumePreview: React.FC = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-6 h-full pb-10 overflow-y-auto pr-2">
-      <div className="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-md p-4 rounded-xl border border-gray-200 flex items-center justify-between shadow-sm">
-        <TemplateSelector />
-        <DownloadPDF />
-      </div>
+  const [contentHeight, setContentHeight] = React.useState(1154);
 
-      <div className="flex-1 bg-white shadow-2xl rounded-sm overflow-hidden aspect-[1/1.414] w-full border border-gray-200 origin-top transform transition-all hover:shadow-3xl">
-        <div className="h-full w-full overflow-y-auto preview-container">
-          {renderTemplate()}
+  React.useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target.id === 'resume-preview-root') {
+          setContentHeight(entry.target.scrollHeight);
+        }
+      }
+    });
+
+    const node = document.getElementById('resume-preview-root');
+    if (node) observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [resume.template]); // Re-observe when template changes
+
+  return (
+    <div className="flex flex-col gap-6 w-full max-w-full overflow-hidden">
+      {!hideControls && (
+        <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-gray-200 flex flex-wrap sm:flex-nowrap items-center justify-between shadow-sm gap-3 md:gap-4">
+          <div className="w-full sm:flex-1 min-w-[200px]">
+            <TemplateSelector />
+          </div>
+          <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-start">
+            <DownloadManager />
+          </div>
+        </div>
+      )}
+
+      {/* Scaling Container */}
+      <div className="relative w-full overflow-hidden flex justify-center bg-gray-100/50 rounded-2xl border border-gray-200 py-8 md:py-12 px-4 shadow-inner">
+        <div 
+          className="resume-preview-scaler origin-top transition-transform duration-300 ease-out shadow-2xl"
+          style={{
+            width: '816px',
+            minHeight: '1154px',
+            transform: `scale(var(--resume-scale, 1))`,
+            // Dynamically adjust margin-bottom based on scaled height to prevent layout gaps
+            marginBottom: `calc(${contentHeight}px * (var(--resume-scale, 1) - 1))`,
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <div id="resume-preview-root" className="w-full bg-white h-auto">
+            {renderTemplate()}
+          </div>
         </div>
       </div>
 
-      <TemplateGallery />
+      {!hideControls && (
+        <div className="mt-4">
+          <div className="flex items-center gap-2 mb-4 px-2">
+            <div className="h-1 flex-1 bg-gradient-to-r from-blue-600 to-transparent rounded-full opacity-20" />
+            <h3 className="text-xs font-black uppercase tracking-widest text-gray-400">Template Gallery</h3>
+            <div className="h-1 flex-1 bg-gradient-to-l from-blue-600 to-transparent rounded-full opacity-20" />
+          </div>
+          <TemplateGallery />
+        </div>
+      )}
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .resume-preview-scaler {
+          --resume-scale: 1;
+        }
+        @media (max-width: 860px) {
+          .resume-preview-scaler {
+            --resume-scale: 0.9;
+          }
+        }
+        @media (max-width: 768px) {
+          .resume-preview-scaler {
+            --resume-scale: 0.75;
+          }
+        }
+        @media (max-width: 640px) {
+          .resume-preview-scaler {
+            --resume-scale: 0.6;
+          }
+        }
+        @media (max-width: 480px) {
+          .resume-preview-scaler {
+            --resume-scale: 0.45;
+          }
+        }
+        @media (max-width: 400px) {
+          .resume-preview-scaler {
+            --resume-scale: 0.38;
+          }
+        }
+      `}} />
     </div>
   );
 };

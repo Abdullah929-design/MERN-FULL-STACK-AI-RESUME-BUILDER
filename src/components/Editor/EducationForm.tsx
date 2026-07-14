@@ -16,56 +16,59 @@ export const EducationForm: React.FC = () => {
             className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 bg-gray-50/50"
             onClick={() => setExpandedId(expandedId === edu.id ? null : edu.id)}
           >
-            <div className="flex items-center gap-3">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600 text-xs font-bold">
+            <div className="flex items-center gap-3 flex-1 min-w-0 mr-4">
+              <span className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600 text-xs font-bold">
                 {index + 1}
               </span>
-              <h3 className="font-medium text-gray-800">
+              <h3 className="font-bold text-gray-800 text-sm truncate">
                 {edu.degree || "Degree"} {edu.institution ? `@ ${edu.institution}` : ""}
               </h3>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button 
                 onClick={(e) => { e.stopPropagation(); removeEducation(edu.id); }}
-                className="p-1.5 text-red-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 bg-red-50/50 rounded-xl transition-all border border-red-100"
+                title="Delete Education"
               >
                 <Trash2 size={16} />
               </button>
-              {expandedId === edu.id ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+              <div className="text-gray-400 p-1">
+                {expandedId === edu.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              </div>
             </div>
           </div>
 
           {expandedId === edu.id && (
             <div className="p-4 space-y-4 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Institution</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Institution</label>
                   <input
                     type="text"
                     value={edu.institution}
                     onChange={(e) => updateEducation(edu.id, { institution: e.target.value })}
-                    placeholder="Institution Name"
-                    className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-green-500 outline-none transition-all"
+                    placeholder="University or School Name"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-sm font-medium transition-all shadow-sm"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Degree</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Degree</label>
                   <input
                     type="text"
                     value={edu.degree}
                     onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
-                    placeholder="Degree or Certificate"
-                    className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-green-500 outline-none transition-all"
+                    placeholder="e.g., Bachelor of Science"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-sm font-medium transition-all shadow-sm"
                   />
                 </div>
-                <div className="space-y-1 md:col-span-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Year</label>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Year</label>
                   <input
                     type="text"
                     value={edu.year}
                     onChange={(e) => updateEducation(edu.id, { year: e.target.value })}
-                    placeholder="Graduation Year or Range"
-                    className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-lg focus:ring-1 focus:ring-green-500 outline-none transition-all"
+                    placeholder="Graduation Year or Range (e.g., 2019 - 2023)"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-sm font-medium transition-all shadow-sm"
                   />
                 </div>
               </div>
@@ -75,10 +78,13 @@ export const EducationForm: React.FC = () => {
       ))}
       <button
         onClick={addEducation}
-        className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:text-green-600 hover:border-green-200 hover:bg-green-50/30 transition-all flex items-center justify-center gap-2 group"
+        disabled={education.length >= 5}
+        className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:text-green-600 hover:border-green-200 hover:bg-green-50/30 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Plus size={20} className="group-hover:scale-110 transition-transform" />
-        <span className="font-semibold">Add Education</span>
+        <span className="font-semibold">
+          {education.length >= 5 ? 'Education Limit Reached (Max 5)' : 'Add Education'}
+        </span>
       </button>
     </div>
   );

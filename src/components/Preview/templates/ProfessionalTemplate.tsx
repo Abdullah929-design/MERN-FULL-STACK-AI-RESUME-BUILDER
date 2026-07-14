@@ -388,11 +388,9 @@ export const ProfessionalTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   fontWeight: 700,
                   color: '#374151',
                   fontStyle: 'italic',
-                  padding: '5px 8px',
+                  padding: '5px 0',
                   borderBottom: '1px solid #f3f4f6',
-                  background: '#ffffff',
-                  border: '1px solid #f3f4f6',
-                  marginBottom: '4px',
+                  marginBottom: '2px',
                 }}
               >
                 {skill}

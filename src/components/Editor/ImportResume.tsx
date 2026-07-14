@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useResumeStore } from '../../store/useResumeStore';
 import {
   FileUp, Loader2, Sparkles, X, AlertCircle, Upload, FileText,
@@ -26,7 +27,7 @@ export const ImportResume: React.FC = () => {
   const [warnings, setWarnings] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { resume, setResume, incrementAIUsage, isAIALimitReached } = useResumeStore();
+  const { resume, setResume, incrementAIUsage, isAIALimitReached, setShowAILimitPopup } = useResumeStore();
 
   const cn = (...inputs: (string | undefined | null | false)[]) => twMerge(clsx(inputs));
 
@@ -71,7 +72,7 @@ export const ImportResume: React.FC = () => {
           : resume.sections.customSections || [],
       }
     });
-    incrementAIUsage();
+    incrementAIUsage('autoFill');
 
     if (aiWarnings && aiWarnings.length > 0) {
       setStage('review');
@@ -81,7 +82,7 @@ export const ImportResume: React.FC = () => {
   };
 
   const handleSmartImport = async () => {
-    if (isAIALimitReached()) { setError('Daily AI limit reached. Try again tomorrow.'); return; }
+    if (isAIALimitReached('autoFill')) { setShowAILimitPopup(true); return; }
     if (!text.trim()) { setError('Please paste text or upload a file first.'); return; }
 
     setIsExtracting(true);
@@ -103,7 +104,7 @@ export const ImportResume: React.FC = () => {
   };
 
   const handleLinkedInExtract = async () => {
-    if (isAIALimitReached()) { setError('Daily AI limit reached. Try again tomorrow.'); return; }
+    if (isAIALimitReached('autoFill')) { setShowAILimitPopup(true); return; }
     if (!linkedinText.trim()) { setError('Please paste raw LinkedIn PDF text first.'); return; }
 
     setIsExtracting(true);
@@ -140,11 +141,10 @@ export const ImportResume: React.FC = () => {
     );
   }
 
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+  return createPortal(
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-
-        {/* Header */}
+        {/* ... existing modal interior ... */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0">
           <div className="flex items-center gap-2">
             {stage === 'review' ? (
@@ -164,7 +164,6 @@ export const ImportResume: React.FC = () => {
           </button>
         </div>
 
-        {/* Tab Bar — only shown on input stage */}
         {stage === 'input' && (
           <div className="flex border-b border-gray-100">
             <button
@@ -193,7 +192,6 @@ export const ImportResume: React.FC = () => {
             className="hidden"
           />
 
-          {/* ── INPUT STAGE ─────────────────────────────────────── */}
           {stage === 'input' && tab === 'smart' && (
             <div className="space-y-6 animate-in fade-in duration-300">
               <div className="space-y-4">
@@ -260,10 +258,8 @@ export const ImportResume: React.FC = () => {
             </div>
           )}
 
-          {/* ── REVIEW STAGE ────────────────────────────────────── */}
           {stage === 'review' && (
             <div className="space-y-5 animate-in fade-in duration-300">
-              {/* Success banner */}
               <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
                 <CheckCircle2 className="text-green-600 mt-0.5 flex-shrink-0" size={20} />
                 <div>
@@ -272,7 +268,6 @@ export const ImportResume: React.FC = () => {
                 </div>
               </div>
 
-              {/* Warnings list */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-amber-700 font-semibold text-sm">
                   <AlertTriangle size={16} />
@@ -288,7 +283,6 @@ export const ImportResume: React.FC = () => {
                 </div>
               </div>
 
-              {/* Guidance note */}
               <div className="flex items-start gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">
                 <ShieldCheck size={16} className="text-gray-400 flex-shrink-0 mt-0.5" />
                 <span>These items have been imported as-is. You can edit any field directly in the builder to correct them. Custom sections (Projects, Certifications, etc.) will appear under the custom sections panel.</span>
@@ -296,7 +290,6 @@ export const ImportResume: React.FC = () => {
             </div>
           )}
 
-          {/* Error banner */}
           {error && (
             <div className="flex items-center gap-2 p-3 mt-4 bg-red-50 text-red-600 rounded-lg text-sm animate-in slide-in-from-top-2 border border-red-100">
               <AlertCircle size={16} />
@@ -305,7 +298,6 @@ export const ImportResume: React.FC = () => {
           )}
         </div>
 
-        {/* Footer */}
         <div className="p-6 border-t border-gray-100 flex gap-3 bg-gray-50 mt-auto">
           {stage === 'input' && (
             <>
@@ -358,6 +350,7 @@ export const ImportResume: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

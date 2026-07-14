@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Resume, AIUsage, Experience, Education, CustomSectionItem } from '../types/resume';
+import type { Resume, AIUsage, Experience, Education, CustomSectionItem, AIUsageType } from '../types/resume';
 
 
 interface ResumeState {
@@ -36,8 +36,11 @@ interface ResumeState {
   setTemplate: (template: Resume['template']) => void;
   setResume: (resume: Resume) => void;
   
-  incrementAIUsage: () => void;
-  isAIALimitReached: () => boolean;
+  incrementAIUsage: (type: AIUsageType) => void;
+  isAIALimitReached: (type: AIUsageType) => boolean;
+  
+  showAILimitPopup: boolean;
+  setShowAILimitPopup: (show: boolean) => void;
 }
 
 const initialResume: Resume = {
@@ -61,7 +64,11 @@ const initialResume: Resume = {
 };
 
 const initialAIUsage: AIUsage = {
-  count: 0,
+  description: 0,
+  autoFill: 0,
+  ats: 0,
+  coverLetter: 0,
+  social: 0,
   lastReset: new Date().toISOString().split('T')[0],
 };
 
@@ -70,6 +77,8 @@ export const useResumeStore = create<ResumeState>()(
     (set, get) => ({
       resume: initialResume,
       aiUsage: initialAIUsage,
+      showAILimitPopup: false,
+      setShowAILimitPopup: (show) => set({ showAILimitPopup: show }),
 
       updatePersonal: (personal) =>
         set((state) => ({
@@ -86,44 +95,53 @@ export const useResumeStore = create<ResumeState>()(
         set((state) => ({
           resume: {
             ...state.resume,
-            sections: { ...state.resume.sections, summary },
+            sections: { ...state.resume.sections, summary: summary.slice(0, 600) },
           },
         })),
 
       addExperience: () =>
-        set((state) => ({
-          resume: {
-            ...state.resume,
-            sections: {
-              ...state.resume.sections,
-              experience: [
-                ...(state.resume.sections.experience || []),
-                {
-                  id: crypto.randomUUID(),
-                  company: '',
-                  role: '',
-                  startDate: '',
-                  endDate: '',
-                  description: '',
-                  bullets: [],
-                },
-              ],
+        set((state) => {
+          if ((state.resume.sections.experience || []).length >= 5) return state;
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                experience: [
+                  ...(state.resume.sections.experience || []),
+                  {
+                    id: crypto.randomUUID(),
+                    company: '',
+                    role: '',
+                    startDate: '',
+                    endDate: '',
+                    description: '',
+                    bullets: [],
+                  },
+                ],
+              },
             },
-          },
-        })),
+          };
+        }),
 
       updateExperience: (id, experience) =>
-        set((state) => ({
-          resume: {
-            ...state.resume,
-            sections: {
-              ...state.resume.sections,
-              experience: (state.resume.sections.experience || []).map((exp) =>
-                exp.id === id ? { ...exp, ...experience } : exp
-              ),
+        set((state) => {
+          const updatedExperience = { ...experience };
+          if (updatedExperience.description) {
+            updatedExperience.description = updatedExperience.description.slice(0, 500);
+          }
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                experience: (state.resume.sections.experience || []).map((exp) =>
+                  exp.id === id ? { ...exp, ...updatedExperience } : exp
+                ),
+              },
             },
-          },
-        })),
+          };
+        }),
 
       removeExperience: (id) =>
         set((state) => ({
@@ -137,18 +155,21 @@ export const useResumeStore = create<ResumeState>()(
         })),
 
       addEducation: () =>
-        set((state) => ({
-          resume: {
-            ...state.resume,
-            sections: {
-              ...state.resume.sections,
-              education: [
-                ...(state.resume.sections.education || []),
-                { id: crypto.randomUUID(), institution: '', degree: '', year: '' },
-              ],
+        set((state) => {
+          if ((state.resume.sections.education || []).length >= 5) return state;
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                education: [
+                  ...(state.resume.sections.education || []),
+                  { id: crypto.randomUUID(), institution: '', degree: '', year: '' },
+                ],
+              },
             },
-          },
-        })),
+          };
+        }),
 
       updateEducation: (id, education) =>
         set((state) => ({
@@ -175,15 +196,18 @@ export const useResumeStore = create<ResumeState>()(
         })),
 
       addSkill: (skill) =>
-        set((state) => ({
-          resume: {
-            ...state.resume,
-            sections: {
-              ...state.resume.sections,
-              skills: [...new Set([...(state.resume.sections.skills || []), skill])],
+        set((state) => {
+          if ((state.resume.sections.skills || []).length >= 15) return state;
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                skills: [...new Set([...(state.resume.sections.skills || []), skill])],
+              },
             },
-          },
-        })),
+          };
+        }),
 
       removeSkill: (skill) =>
         set((state) => ({
@@ -201,28 +225,32 @@ export const useResumeStore = create<ResumeState>()(
           const sanitized = Array.isArray(skills) 
             ? skills.flatMap(s => typeof s === 'string' ? s : Object.values(s as any).flat().filter(v => typeof v === 'string') as string[])
             : [];
+          const capped = [...new Set(sanitized)].slice(0, 15);
           return {
             resume: {
               ...state.resume,
-              sections: { ...state.resume.sections, skills: [...new Set(sanitized)] },
+              sections: { ...state.resume.sections, skills: capped },
             },
           };
         }),
 
       // Custom Sections Actions
       addCustomSection: (title) =>
-        set((state) => ({
-          resume: {
-            ...state.resume,
-            sections: {
-              ...state.resume.sections,
-              customSections: [
-                ...(state.resume.sections.customSections || []),
-                { id: crypto.randomUUID(), title, items: [] },
-              ],
+        set((state) => {
+          if ((state.resume.sections.customSections || []).length >= 5) return state;
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                customSections: [
+                  ...(state.resume.sections.customSections || []),
+                  { id: crypto.randomUUID(), title, items: [] },
+                ],
+              },
             },
-          },
-        })),
+          };
+        }),
 
       updateCustomSectionTitle: (id, title) =>
         set((state) => ({
@@ -277,7 +305,7 @@ export const useResumeStore = create<ResumeState>()(
             sections: {
               ...state.resume.sections,
               customSections: (state.resume.sections.customSections || []).map((s) =>
-                s.id === sectionId
+                s.id === sectionId && s.items.length < 5
                   ? {
                       ...s,
                       items: [
@@ -292,22 +320,28 @@ export const useResumeStore = create<ResumeState>()(
         })),
 
       updateCustomItem: (sectionId, itemId, item) =>
-        set((state) => ({
-          resume: {
-            ...state.resume,
-            sections: {
-              ...state.resume.sections,
-              customSections: (state.resume.sections.customSections || []).map((s) =>
-                s.id === sectionId
-                  ? {
-                      ...s,
-                      items: s.items.map((i) => (i.id === itemId ? { ...i, ...item } : i)),
-                    }
-                  : s
-              ),
+        set((state) => {
+          const updatedItem = { ...item };
+          if (updatedItem.description) {
+            updatedItem.description = updatedItem.description.slice(0, 500);
+          }
+          return {
+            resume: {
+              ...state.resume,
+              sections: {
+                ...state.resume.sections,
+                customSections: (state.resume.sections.customSections || []).map((s) =>
+                  s.id === sectionId
+                    ? {
+                        ...s,
+                        items: s.items.map((i) => (i.id === itemId ? { ...i, ...updatedItem } : i)),
+                      }
+                    : s
+                ),
+              },
             },
-          },
-        })),
+          };
+        }),
 
       removeCustomItem: (sectionId, itemId) =>
         set((state) => ({
@@ -355,24 +389,34 @@ export const useResumeStore = create<ResumeState>()(
       },
 
 
-      incrementAIUsage: () => {
+      incrementAIUsage: (type) => {
         const today = new Date().toISOString().split('T')[0];
         set((state) => {
           const isNewDay = state.aiUsage.lastReset !== today;
           return {
             aiUsage: {
-              count: isNewDay ? 1 : state.aiUsage.count + 1,
+              ...(isNewDay ? initialAIUsage : state.aiUsage),
+              [type]: (isNewDay ? 1 : (state.aiUsage[type as keyof AIUsage] as number) + 1),
               lastReset: today,
             },
           };
         });
       },
-
-      isAIALimitReached: () => {
+      
+      isAIALimitReached: (type) => {
         const today = new Date().toISOString().split('T')[0];
         const state = get();
         if (state.aiUsage.lastReset !== today) return false;
-        return state.aiUsage.count >= 5;
+        
+        const limits: Record<AIUsageType, number> = {
+          description: 3,
+          autoFill: 2,
+          ats: 2,
+          coverLetter: 2,
+          social: 2
+        };
+        
+        return (state.aiUsage[type as keyof AIUsage] as number) >= limits[type];
       },
     }),
     {

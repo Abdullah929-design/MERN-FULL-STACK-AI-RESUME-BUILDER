@@ -51,7 +51,13 @@ export interface Resume {
   };
 }
 
+export type AIUsageType = 'description' | 'autoFill' | 'ats' | 'coverLetter' | 'social';
+
 export interface AIUsage {
-  count: number;
+  description: number;
+  autoFill: number;
+  ats: number;
+  coverLetter: number;
+  social: number;
   lastReset: string;
 }

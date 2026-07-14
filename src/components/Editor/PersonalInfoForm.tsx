@@ -21,58 +21,58 @@ export const PersonalInfoForm: React.FC = () => {
       {/* Inputs Column */}
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-gray-700">Full Name</label>
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
           <input
             type="text"
             name="name"
             value={personal.name}
             onChange={handleChange}
             placeholder="Your Full Name"
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm text-sm font-medium"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Email Address</label>
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Email Address</label>
           <input
             type="email"
             name="email"
             value={personal.email}
             onChange={handleChange}
             placeholder="your.email@example.com"
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm text-sm font-medium"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Phone Number</label>
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Phone Number</label>
           <input
             type="tel"
             name="phone"
             value={personal.phone}
             onChange={handleChange}
             placeholder="Your Phone Number"
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm text-sm font-medium"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Location</label>
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Location</label>
           <input
             type="text"
             name="location"
             value={personal.location}
             onChange={handleChange}
             placeholder="City, Country"
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm text-sm font-medium"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Professional Title</label>
+          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Professional Title</label>
           <input
             type="text"
             name="title"
             value={personal.title}
             onChange={handleChange}
             placeholder="Your Professional Title"
-            className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm text-sm font-medium"
           />
         </div>
       </div>
