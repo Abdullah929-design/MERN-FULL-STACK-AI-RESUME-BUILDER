@@ -89,12 +89,13 @@ export default function Landing() {
             </div>
 
             <Link
-              to="/builder"
-              className="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-sm shadow-blue-100 active:scale-95"
-            >
-              <Zap size={18} />
-              Start Building
-            </Link>
+  to="/builder"
+  className="flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-3 bg-blue-600 text-white rounded-xl text-sm sm:text-base font-semibold hover:bg-blue-700 transition-all shadow-sm shadow-blue-100 active:scale-95"
+>
+  <Zap size={16} className="sm:hidden" />
+  <Zap size={18} className="hidden sm:block" />
+  Start Building
+</Link>
           </div>
         </div>
       </nav>
