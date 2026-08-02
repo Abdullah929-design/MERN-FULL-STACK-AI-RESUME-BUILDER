@@ -59,32 +59,21 @@ Use cases:
 ---
 
 ## Screenshots
-
-> NOTE: Replace the placeholders below with real screenshots. Images are intentionally left as placeholders so you can add them later.
-
 ### Landing / Dashboard
 
-![Dashboard placeholder](assets/screenshots/dashboard-placeholder.png)
-
-_Replace the image above with a real screenshot of the dashboard._
+<img width="2560" height="1600" alt="www airesumes online_(Nest Hub Max)" src="https://github.com/user-attachments/assets/93d63c90-faa9-4643-9707-f8192d2c7445" />
 
 ### Editor view
 
-![Editor placeholder](assets/screenshots/editor-placeholder.png)
-
-_Replace the image above with a screenshot of the resume editor._
+<img width="2560" height="1600" alt="www airesumes online_(Nest Hub Max) (1)" src="https://github.com/user-attachments/assets/94789f69-ef59-43ff-9c48-65ffbd19cfaa" />
 
 ### Template preview
 
-![Template placeholder 1](assets/screenshots/template-placeholder-1.png)
-
-_Replace with a template preview screenshot._
+<img width="2560" height="1600" alt="www airesumes online_(Nest Hub Max) (2)" src="https://github.com/user-attachments/assets/e2fa576f-9cb3-4564-abeb-c0fad149323e" />
 
 ### Template preview (alternate)
 
-![Template placeholder 2](assets/screenshots/template-placeholder-2.png)
-
----
+<img width="2560" height="1600" alt="www airesumes online_(Nest Hub Max) (3)" src="https://github.com/user-attachments/assets/490896e2-e757-47ee-8ab4-60035c165a37" />
 
 ## Getting Started
 
