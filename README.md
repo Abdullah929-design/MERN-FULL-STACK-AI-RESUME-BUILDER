@@ -37,6 +37,12 @@ Use cases:
 
 ---
 
+## Links
+The live URL is as follows:
+https://www.airesumes.online/
+
+---
+
 ## Features
 
 - AI-assisted resume generation
