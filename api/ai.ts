@@ -13,7 +13,7 @@ const ACTIVE_API_URL = GROQ_API_KEY
   ? 'https://api.groq.com/openai/v1/chat/completions'
   : (process.env.FREELLMAPI_API_URL || 'https://openrouter.ai/api/v1/chat/completions');
 const ACTIVE_MODEL = GROQ_API_KEY
-  ? (process.env.GROQ_MODEL || 'llama-3.3-70b-versatile')
+  ? (process.env.GROQ_MODEL || 'groq/compound')
   : (process.env.FREELLMAPI_MODEL || 'mistral/mistral-large-latest');
 
 interface UserStats {
