@@ -17,7 +17,7 @@ const ACTIVE_API_URL = GROQ_API_KEY
 // llama-3.3-70b-versatile = best quality, 128K context, free tier
 // Fallback for OpenRouter remains unchanged
 const ACTIVE_MODEL = GROQ_API_KEY
-  ? (process.env.GROQ_MODEL || 'compound-beta')
+  ? (process.env.GROQ_MODEL || 'groq/compound')
   : (process.env.FREELLMAPI_MODEL || 'google/gemini-2.5-flash');
 
 interface UserStats {
