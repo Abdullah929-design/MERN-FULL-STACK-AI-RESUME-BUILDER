@@ -12,9 +12,13 @@ const ACTIVE_API_KEY = GROQ_API_KEY || FREELLMAPI_API_KEY;
 const ACTIVE_API_URL = GROQ_API_KEY
   ? 'https://api.groq.com/openai/v1/chat/completions'
   : (process.env.FREELLMAPI_API_URL || 'https://openrouter.ai/api/v1/chat/completions');
+
+// FIX: 'groq/compound' was invalid. Now uses correct Groq model IDs.
+// llama-3.3-70b-versatile = best quality, 128K context, free tier
+// Fallback for OpenRouter remains unchanged
 const ACTIVE_MODEL = GROQ_API_KEY
-  ? (process.env.GROQ_MODEL || 'compound-beta')
-  : (process.env.FREELLMAPI_MODEL || 'google/gemini-3.6-flash:free');
+  ? (process.env.GROQ_MODEL || 'llama-3.3-70b-versatile')
+  : (process.env.FREELLMAPI_MODEL || 'google/gemini-2.5-flash:free');
 
 interface UserStats {
   [key: string]: string | number;
@@ -354,10 +358,19 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
         return res.status(400).json({ error: 'Invalid request type' });
     }
 
-    const model = ACTIVE_MODEL;
-    console.log('[AI API] Sending request to AI backend...', { model, type, url: ACTIVE_API_URL });
+    // FIX: Per-type model selection.
+    // Heavy tasks (large JSON extraction, scoring) → big model for quality & context.
+    // Light tasks (summary, skills, improve, share) → fast small model.
+    const HEAVY_TYPES = ['extract', 'linkedin_extract', 'ats_score', 'cover_letter'];
+    const model = GROQ_API_KEY
+      ? (HEAVY_TYPES.includes(type)
+        ? (process.env.GROQ_MODEL_HEAVY || 'llama-3.3-70b-versatile')
+        : (process.env.GROQ_MODEL_LIGHT || 'llama-3.1-8b-instant'))
+      : ACTIVE_MODEL;
 
-    const maxTokens = (type === 'extract' || type === 'linkedin_extract' || type === 'ats_score' || type === 'cover_letter') ? 4000 : 1500;
+    const maxTokens = HEAVY_TYPES.includes(type) ? 4000 : 1500;
+
+    console.log('[AI API] Sending request to AI backend...', { model, type, url: ACTIVE_API_URL });
 
     const response = await axios.post(ACTIVE_API_URL, {
       model,
@@ -374,15 +387,15 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
         'HTTP-Referer': 'https://github.com/Abdullah929-design/ResumeBuilder',
         'X-Title': 'Resume Builder AI',
       },
-      timeout: 25000, // Extend timeout for slower LLM responses
+      timeout: 25000,
     });
 
     const data = response.data;
     console.log('[AI API] AI backend response received');
 
     if (data.error) {
-      console.error('[AI API] FreeLLMAPI Error:', data.error);
-      return res.status(502).json({ error: 'FreeLLMAPI API Error', details: data.error.message || data.error });
+      console.error('[AI API] API Error:', data.error);
+      return res.status(502).json({ error: 'AI API Error', details: data.error.message || data.error });
     }
 
     if (data.choices && data.choices[0]) {
@@ -402,10 +415,8 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
           const sanitized: string[] = [];
           list.forEach((s: any) => {
             if (typeof s === 'string') {
-              // Handle "Category: skill1, skill2" or "s1 Category: skill1, skill2" patterns
               const colonIdx = s.indexOf(':');
               if (colonIdx !== -1) {
-                // Extract the part after the colon (the actual skills)
                 const afterColon = s.substring(colonIdx + 1).trim();
                 if (afterColon) {
                   const parts = afterColon.split(/[,;]+/).map((p: string) => p.trim()).filter((p: string) => p.length > 0 && p.length < 60);
@@ -417,7 +428,6 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
                 sanitized.push(s.trim());
               }
             } else if (typeof s === 'object' && s !== null) {
-              // Handle nested objects like { category: [skill1, skill2] }
               Object.values(s).flat().forEach((v: any) => {
                 if (typeof v === 'string') sanitized.push(v.trim());
               });
@@ -451,12 +461,10 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
         if ((type === 'extract' || type === 'linkedin_extract') && content.resume?.sections) {
           const sections = content.resume.sections;
 
-          // Ensure customSections is always an array (model may omit it if empty)
           if (!Array.isArray(sections.customSections)) {
             sections.customSections = [];
           }
 
-          // Ensure warnings array exists at top level
           if (!Array.isArray(content.warnings)) {
             content.warnings = [];
           }
@@ -470,7 +478,6 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
               }
               return true;
             });
-            // Convert and move misclassified entries to education, add a warning each time
             misclassified.forEach((entry: any) => {
               const year = entry.startDate && entry.endDate
                 ? `${entry.startDate}\u2013${entry.endDate}`
@@ -486,7 +493,6 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
               );
             });
 
-            // Deduplicate education entries that appear in both (model sometimes outputs both)
             const educationSeen = new Set<string>();
             sections.education = sections.education.filter((entry: any) => {
               const key = `${(entry.institution || '').toLowerCase()}|${(entry.degree || '').toLowerCase()}`;
@@ -497,10 +503,7 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
           }
         }
 
-        // Convert arrays back if needed (removed since schema changed)
-
         return res.status(200).json(content);
-
 
       } catch (parseError: any) {
         return res.status(500).json({ error: 'Failed to parse AI response as JSON', rawString: contentString, parseError: parseError.message });
