@@ -60,8 +60,8 @@ ${resume.sections.skills.join(', ')}
       const response = await axios.post('/api/ai', {
         type: 'cover_letter',
         input: {
-          resume: resumeText,
-          jobDescription: jobDescription.trim()
+          resume: resumeText.substring(0, 50000),
+          jobDescription: jobDescription.trim().substring(0, 50000)
         }
       });
 

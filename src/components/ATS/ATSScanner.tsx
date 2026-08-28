@@ -70,7 +70,10 @@ export function ATSScanner() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'ats_score',
-          input: { resume: resumeText, jobDescription }
+          input: { 
+            resume: resumeText.substring(0, 50000), 
+            jobDescription: jobDescription.substring(0, 50000) 
+          }
         }),
       });
       const data = await response.json();
