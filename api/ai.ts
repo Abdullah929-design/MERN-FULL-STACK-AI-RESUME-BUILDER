@@ -3,22 +3,8 @@ import axios from 'axios';
 import { randomUUID } from 'crypto';
 import { kv } from '@vercel/kv';
 
-// API key priority: Groq (fast & free) → FreeLLMAPI → OpenRouter
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const FREELLMAPI_API_KEY = process.env.FREELLMAPI_API_KEY || process.env.OPENROUTER_API_KEY;
-
-// Select the active key and URL
-const ACTIVE_API_KEY = GROQ_API_KEY || FREELLMAPI_API_KEY;
-const ACTIVE_API_URL = GROQ_API_KEY
-  ? 'https://api.groq.com/openai/v1/chat/completions'
-  : (process.env.FREELLMAPI_API_URL || 'https://openrouter.ai/api/v1/chat/completions');
-
-// FIX: 'groq/compound' was invalid. Now uses correct Groq model IDs.
-// llama-3.3-70b-versatile = best quality, 128K context, free tier
-// Fallback for OpenRouter remains unchanged
-const ACTIVE_MODEL = GROQ_API_KEY
-  ? (process.env.GROQ_MODEL || 'groq/compound')
-  : (process.env.FREELLMAPI_MODEL || 'google/gemini-2.5-flash');
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
 interface UserStats {
   [key: string]: string | number;
@@ -108,7 +94,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (type === 'ping' || req.query.type === 'ping') {
     return res.status(200).json({
       status: 'ok',
-      hasKey: !!FREELLMAPI_API_KEY,
+      hasKey: !!GEMINI_API_KEY,
       nodeVersion: process.version,
       timestamp: new Date().toISOString()
     });
@@ -119,11 +105,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing required fields: type and input' });
   }
 
-  if (!ACTIVE_API_KEY) {
-    console.error('[AI API] No AI API key configured');
+  if (!GEMINI_API_KEY) {
+    console.error('[AI API] GEMINI_API_KEY is missing');
     return res.status(500).json({
-      error: 'No AI API key is configured.',
-      tip: 'Add GROQ_API_KEY (recommended) or FREELLMAPI_API_KEY/OPENROUTER_API_KEY to your Vercel environment variables.'
+      error: 'GEMINI_API_KEY is not set in Environment Variables.',
+      tip: 'Add GEMINI_API_KEY to your Vercel Settings.'
     });
   }
 
@@ -358,48 +344,48 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
         return res.status(400).json({ error: 'Invalid request type' });
     }
 
-    // FIX: Per-type model selection.
-    // Heavy tasks (large JSON extraction, scoring) → big model for quality & context.
-    // Light tasks (summary, skills, improve, share) → fast small model.
-    const HEAVY_TYPES = ['extract', 'linkedin_extract', 'ats_score', 'cover_letter'];
-    const model = GROQ_API_KEY
-      ? (HEAVY_TYPES.includes(type)
-        ? (process.env.GROQ_MODEL_HEAVY || 'llama-3.3-70b-versatile')
-        : (process.env.GROQ_MODEL_LIGHT || 'llama-3.1-8b-instant'))
-      : ACTIVE_MODEL;
+    const model = GEMINI_MODEL;
+    const maxTokens = (type === 'extract' || type === 'linkedin_extract' || type === 'ats_score' || type === 'cover_letter') ? 4000 : 1500;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
-    const maxTokens = HEAVY_TYPES.includes(type) ? 4000 : 1500;
+    console.log('[AI API] Sending request to direct Google Gemini API...', { model, type });
 
-    console.log('[AI API] Sending request to AI backend...', { model, type, url: ACTIVE_API_URL });
-
-    const response = await axios.post(ACTIVE_API_URL, {
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
+    const response = await axios.post(url, {
+      systemInstruction: {
+        parts: [
+          { text: systemPrompt }
+        ]
+      },
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: userPrompt }
+          ]
+        }
       ],
-      temperature: 0.05,
-      max_tokens: maxTokens
+      generationConfig: {
+        temperature: 0.05,
+        maxOutputTokens: maxTokens
+      }
     }, {
       headers: {
-        'Authorization': `Bearer ${ACTIVE_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://github.com/Abdullah929-design/ResumeBuilder',
-        'X-Title': 'Resume Builder AI',
+        'Content-Type': 'application/json'
       },
       timeout: 25000,
     });
 
     const data = response.data;
-    console.log('[AI API] AI backend response received');
+    console.log('[AI API] Gemini response received');
 
     if (data.error) {
       console.error('[AI API] API Error:', data.error);
       return res.status(502).json({ error: 'AI API Error', details: data.error.message || data.error });
     }
 
-    if (data.choices && data.choices[0]) {
-      let contentString = data.choices[0].message.content;
+    const hasCandidate = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0];
+    if (hasCandidate) {
+      let contentString = data.candidates[0].content.parts[0].text;
 
       try {
         if (contentString.includes('```json')) {
