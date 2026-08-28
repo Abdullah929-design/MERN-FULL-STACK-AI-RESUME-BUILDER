@@ -433,7 +433,8 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
               });
             }
           });
-          return [...new Set(sanitized.filter(s => s.length > 0 && s.length < 80))];
+          const filtered = sanitized.filter(s => s.length > 0 && s.length < 80);
+          return filtered.filter((item, index, self) => self.indexOf(item) === index);
         };
 
         // Helper to detect if an experience entry is actually an education entry
