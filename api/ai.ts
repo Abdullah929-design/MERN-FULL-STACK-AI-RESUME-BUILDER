@@ -3,9 +3,18 @@ import axios from 'axios';
 import { randomUUID } from 'crypto';
 import { kv } from '@vercel/kv';
 
+// API key priority: Groq (fast & free) → FreeLLMAPI → OpenRouter
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const FREELLMAPI_API_KEY = process.env.FREELLMAPI_API_KEY || process.env.OPENROUTER_API_KEY;
-const FREELLMAPI_API_URL = process.env.FREELLMAPI_API_URL || 'http://localhost:3001/v1/chat/completions';
-const FREELLMAPI_MODEL = process.env.FREELLMAPI_MODEL || 'mistral-large-latest';
+
+// Select the active key and URL
+const ACTIVE_API_KEY = GROQ_API_KEY || FREELLMAPI_API_KEY;
+const ACTIVE_API_URL = GROQ_API_KEY
+  ? 'https://api.groq.com/openai/v1/chat/completions'
+  : (process.env.FREELLMAPI_API_URL || 'https://openrouter.ai/api/v1/chat/completions');
+const ACTIVE_MODEL = GROQ_API_KEY
+  ? (process.env.GROQ_MODEL || 'llama-3.3-70b-versatile')
+  : (process.env.FREELLMAPI_MODEL || 'mistral/mistral-large-latest');
 
 interface UserStats {
   [key: string]: string | number;
@@ -106,11 +115,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing required fields: type and input' });
   }
 
-  if (!FREELLMAPI_API_KEY) {
-    console.error('[AI API] FREELLMAPI_API_KEY is missing');
+  if (!ACTIVE_API_KEY) {
+    console.error('[AI API] No AI API key configured');
     return res.status(500).json({ 
-      error: 'FREELLMAPI_API_KEY is not set in Environment Variables.',
-      tip: 'Add FREELLMAPI_API_KEY to your Vercel Settings.'
+      error: 'No AI API key is configured.',
+      tip: 'Add GROQ_API_KEY (recommended) or FREELLMAPI_API_KEY/OPENROUTER_API_KEY to your Vercel environment variables.'
     });
   }
 
@@ -345,10 +354,10 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
         return res.status(400).json({ error: 'Invalid request type' });
     }
 
-    const model = FREELLMAPI_MODEL;
-    console.log('[AI API] Sending request to FreeLLMAPI...', { model, type });
+    const model = ACTIVE_MODEL;
+    console.log('[AI API] Sending request to AI backend...', { model, type, url: ACTIVE_API_URL });
 
-    const response = await axios.post(FREELLMAPI_API_URL, {
+    const response = await axios.post(ACTIVE_API_URL, {
       model,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -357,7 +366,7 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
       temperature: 0.05
     }, {
       headers: {
-        'Authorization': `Bearer ${FREELLMAPI_API_KEY}`,
+        'Authorization': `Bearer ${ACTIVE_API_KEY}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': 'https://github.com/Abdullah929-design/ResumeBuilder',
         'X-Title': 'Resume Builder AI',
@@ -366,7 +375,7 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
     });
 
     const data = response.data;
-    console.log('[AI API] FreeLLMAPI response received');
+    console.log('[AI API] AI backend response received');
 
     if (data.error) {
       console.error('[AI API] FreeLLMAPI Error:', data.error);
