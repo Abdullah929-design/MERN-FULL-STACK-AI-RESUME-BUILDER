@@ -89,7 +89,7 @@ export const ImportResume: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.post('/api/ai', { type: 'extract', input: { text: text.substring(0, 50000) } });
+      const response = await axios.post('/api/ai', { type: 'extract', input: { text: text.substring(0, 10000) } });
       if (response.data.resume) {
         applyExtraction(response.data.resume, response.data.warnings || []);
       } else {
@@ -113,7 +113,7 @@ export const ImportResume: React.FC = () => {
     try {
       const response = await axios.post('/api/ai', {
         type: 'linkedin_extract',
-        input: { text: linkedinText.substring(0, 50000) }
+        input: { text: linkedinText.substring(0, 10000) }
       });
       if (response.data.resume) {
         applyExtraction(response.data.resume, response.data.warnings || []);

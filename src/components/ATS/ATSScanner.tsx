@@ -71,8 +71,8 @@ export function ATSScanner() {
         body: JSON.stringify({
           type: 'ats_score',
           input: { 
-            resume: resumeText.substring(0, 50000), 
-            jobDescription: jobDescription.substring(0, 50000) 
+            resume: resumeText.substring(0, 10000), 
+            jobDescription: jobDescription.substring(0, 10000) 
           }
         }),
       });

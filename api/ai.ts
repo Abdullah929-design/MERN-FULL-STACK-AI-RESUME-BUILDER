@@ -14,7 +14,7 @@ const ACTIVE_API_URL = GROQ_API_KEY
   : (process.env.FREELLMAPI_API_URL || 'https://openrouter.ai/api/v1/chat/completions');
 const ACTIVE_MODEL = GROQ_API_KEY
   ? (process.env.GROQ_MODEL || 'groq/compound')
-  : (process.env.FREELLMAPI_MODEL || 'mistral/mistral-large-latest');
+  : (process.env.FREELLMAPI_MODEL || 'google/gemini-2.5-flash:free');
 
 interface UserStats {
   [key: string]: string | number;
@@ -357,13 +357,16 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
     const model = ACTIVE_MODEL;
     console.log('[AI API] Sending request to AI backend...', { model, type, url: ACTIVE_API_URL });
 
+    const maxTokens = (type === 'extract' || type === 'linkedin_extract' || type === 'ats_score' || type === 'cover_letter') ? 4000 : 1500;
+
     const response = await axios.post(ACTIVE_API_URL, {
       model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      temperature: 0.05
+      temperature: 0.05,
+      max_tokens: maxTokens
     }, {
       headers: {
         'Authorization': `Bearer ${ACTIVE_API_KEY}`,
