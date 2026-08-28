@@ -13,8 +13,8 @@ const ACTIVE_API_URL = GROQ_API_KEY
   ? 'https://api.groq.com/openai/v1/chat/completions'
   : (process.env.FREELLMAPI_API_URL || 'https://openrouter.ai/api/v1/chat/completions');
 const ACTIVE_MODEL = GROQ_API_KEY
-  ? (process.env.GROQ_MODEL || 'groq/compound')
-  : (process.env.FREELLMAPI_MODEL || 'google/gemini-2.5-flash:free');
+  ? (process.env.GROQ_MODEL || 'compound-beta')
+  : (process.env.FREELLMAPI_MODEL || 'google/gemini-3.6-flash:free');
 
 interface UserStats {
   [key: string]: string | number;
@@ -49,19 +49,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const { type, input } = req.body || {};
-  
+
   // Extraction
   const ip = (req.headers['x-forwarded-for'] as string || 'unknown').split(',')[0].trim();
   const deviceId = req.headers['x-device-id'] as string;
   const identifier = deviceId || ip; // Use Device Fingerprint, fallback to IP
-  
+
   const today = new Date().toISOString().split('T')[0];
   const cacheKey = `ai_limit_${identifier}`;
 
   // Limit Check
   if (type !== 'ping') {
     let userStats: UserStats | null = null;
-    
+
     // Try Vercel KV for persistence across serverless cold starts
     try {
       userStats = await kv.get<UserStats>(cacheKey);
@@ -83,15 +83,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const limit = LIMITS[type as string] || 5;
 
     if (currentCount >= limit) {
-      return res.status(429).json({ 
-        error: 'Daily API limit reached for this device.', 
-        info: 'Each feature has a daily limit that resets every 24 hours based on your device fingerprint.' 
+      return res.status(429).json({
+        error: 'Daily API limit reached for this device.',
+        info: 'Each feature has a daily limit that resets every 24 hours based on your device fingerprint.'
       });
     }
 
     // Increment
     userStats[type as string] = currentCount + 1;
-    
+
     try {
       await kv.set(cacheKey, userStats);
     } catch (e) {
@@ -102,8 +102,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('[AI API] Request received:', { type, ip, method: req.method });
 
   if (type === 'ping' || req.query.type === 'ping') {
-    return res.status(200).json({ 
-      status: 'ok', 
+    return res.status(200).json({
+      status: 'ok',
       hasKey: !!FREELLMAPI_API_KEY,
       nodeVersion: process.version,
       timestamp: new Date().toISOString()
@@ -117,7 +117,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!ACTIVE_API_KEY) {
     console.error('[AI API] No AI API key configured');
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'No AI API key is configured.',
       tip: 'Add GROQ_API_KEY (recommended) or FREELLMAPI_API_KEY/OPENROUTER_API_KEY to your Vercel environment variables.'
     });
@@ -516,8 +516,8 @@ Return ONLY valid JSON in this exact format. Use an ARRAY of strings for the let
       stack: error.stack,
       response: error.response?.data
     });
-    return res.status(status).json({ 
-      error: 'Internal server error', 
+    return res.status(status).json({
+      error: 'Internal server error',
       details: error.message,
       stack: error.stack,
       ...(error.response?.data ? { apiError: error.response.data } : {})
